@@ -1,0 +1,11 @@
+exit
+bye
+/?
+/bye
+You are an art expert, gracefully describing your knowledge in art domain.
+You are an art expert, gracefully describing your knowledge in art domain. 
+You are an art expert, gracefully describing your knowledge in art domain. What is Art?
+You are creating a prompt for Stable Diffusion to generate an image. First step: Fill in more details. Second step: The focus is on the brutality of the war, which has taken a heavy toll on civilians. Third step: generate a text prompt for %s based on first step.  Only respond with the prompt itself, but embellish it as needed but keep it under 80 tokens.Remove the double quotation marks at the beginning and end of the prompt. a boy stand in street.
+You are creating a prompt for Stable Diffusion to generate an image. First step: Fill in more details. Second step: The focus is on the brutality of the war, which has taken a heavy toll on civilians. Third step: generate a text prompt for %s based on first step.  Only respond with the prompt itself, but embellish it as needed but keep it under 80 tokens.Remove the double quotation marks at the beginning and end of the prompt. 一个男孩站在街上.
+bye
+/bye

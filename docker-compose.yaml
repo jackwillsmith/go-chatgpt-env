@@ -1,0 +1,150 @@
+version: '3.8'
+
+services:
+  user-rpc:
+    image: eilinge/open-ui-user-rpc
+    container_name: user-rpc
+    ports:
+      - "9001:9001"
+    volumes:
+      - ./user-rpc/etc/config.yaml:/app/etc/config.yaml
+      - ./user-rpc/logs:/app/logs
+    networks:
+      - default
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+
+  user-api:
+    image: eilinge/open-ui-user-api
+    container_name: user-api
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./user-api/etc/config.yaml:/app/etc/config.yaml
+      - ./user-api/logs:/app/logs
+    networks:
+      - default
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+
+
+  chat-rpc:
+    image: eilinge/open-ui-chat-rpc
+    container_name: chat-rpc
+    ports:
+      - "9002:9002"
+    volumes:
+      - ./chat-rpc/etc/config.yaml:/app/etc/config.yaml
+      - ./chat-rpc/logs:/app/logs
+    networks:
+      - default
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+
+  chat-api:
+    image: eilinge/open-ui-chat-api
+    container_name: chat-api
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./chat-api/etc/config.yaml:/app/etc/config.yaml
+      - ./chat-api/logs:/app/logs
+    networks:
+      - default
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+
+  redis: # 服务名称
+    image: redis:7.2.4 # redis镜像版本
+    container_name: openui-redis # 容器名称
+    volumes:
+      - ./redis/data:/data # 映射数据目录，宿主机:容器
+    restart: always # 容器开机自启
+    ports:
+      - 6379:6379
+    privileged: true # 获取宿主机root权限
+    networks:
+      - default
+
+  mysql: # 服务名称
+    image: mysql:8.2.0 # redis镜像版本
+    container_name: openui-mysql # 容器名称
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    volumes:
+      - ./mysql/data:/data # 映射数据目录，宿主机:容器
+    restart: always # 容器开机自启
+    ports:
+      - 3306:3306
+    privileged: true # 获取宿主机root权限
+    networks:
+      - default
+
+  etcd:
+    image: "bitnami/etcd:latest"  # 使用bitnami的etcd镜像
+    container_name: openui-etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes  # 允许无认证访问
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379  # 客户端访问地址
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+    ports:
+      - 2379:2379
+      - 2380:2380
+    networks:
+      - default
+
+  etcdkeeper:
+    container_name: openui-etcdkeeper
+    image: evildecay/etcdkeeper:v0.7.6
+    ports:
+      - "8099:8080"
+    networks:
+      - default
+
+  nginx:
+    image: nginx:latest
+    container_name: openui-nginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./nginx/conf/conf.d:/etc/nginx/conf.d
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/data/front:/data/front
+      - /etc/nginx/ssl:/etc/nginx/ssl 
+    networks:
+      - default
+
+  ollama:
+    volumes:
+      - ./ollama:/root/.ollama
+    container_name: ollama
+    tty: true
+    restart: unless-stopped
+    image: ollama/ollama
+    environment:
+      - name=value
+    ports:
+      - 11434:11434
+    networks:
+      - default
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  default:
+    external: true
+    name: openui-net
