@@ -1,4 +1,4 @@
 **/models/
 # **/data/
-**/config.yaml
-**/logs/
+# **/config.yaml
+# **/logs/
